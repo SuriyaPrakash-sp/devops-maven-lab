@@ -1,0 +1,35 @@
+
+trigger:
+  - main
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+steps:
+
+  # Install Java 21
+  - task: JavaToolInstaller@0
+    displayName: 'Set up Java 21'
+    inputs:
+      versionSpec: '21'
+      jdkArchitectureOption: 'x64'
+      jdkSourceOption: 'PreInstalled'
+
+  # Build Maven project
+  - task: Maven@4
+    displayName: 'Build Java Maven Project'
+    inputs:
+      mavenPomFile: 'pom.xml'
+      goals: 'clean package'
+      publishJUnitResults: false
+      javaHomeOption: 'JDKVersion'
+      jdkVersionOption: '1.21'
+      mavenVersionOption: 'Default'
+
+  # Publish JAR artifact
+  - task: PublishBuildArtifacts@1
+    displayName: 'Publish JAR Artifact'
+    inputs:
+      PathtoPublish: '$(System.DefaultWorkingDirectory)/target'
+      ArtifactName: 'ElectricityBillCalculator'
+      publishLocation: 'Container'
